@@ -1,14 +1,23 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-
-
-import { AppService } from './app.service';
+import { MulterModule } from '@nestjs/platform-express';
 import { MovieController } from './movie/movie.controller';
-import { MovieModule } from './movie/movie.module';
+import { Movie, MovieSchema } from './movie/movie.model';
+import { MovieService } from './movie/movie.service';
 
 @Module({
-  imports: [MovieModule,MongooseModule.forRoot("mongodb+srv://man:1234@cluster0.dmuor.mongodb.net/Movies?retryWrites=true&w=majority")],
-  controllers: [MovieController],
-  providers: [AppService],
+  imports: [
+    ConfigModule.forRoot({
+      envFilePath: ['.env']
+    }),
+    MulterModule.register({
+    dest: './src/uploads/files',
+  }),
+    Movie,MongooseModule.forRoot(process.env.MONGODB_URI),
+    MongooseModule.forFeature([{name: 'Movie', schema: MovieSchema}])],
+  providers: [MovieService,],
+  controllers: [MovieController,]
+
 })
 export class AppModule {}

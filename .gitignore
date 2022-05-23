@@ -1,8 +1,8 @@
 # compiled output
 /dist
 /node_modules
-src/uploads/*
-!src/uploads/.gitkeep
+src/uploads/files/*
+!src/uploads/files/.gitkeep
 .env
 
 

@@ -1,58 +1,99 @@
-import {  Controller,
-    Post,
-    Body,
-    Get,
-    Param,
-    Patch,
-    Delete,  } from '@nestjs/common';
-    import { MovieService } from './movie.service';
+import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Res, UploadedFile, UploadedFiles, UseInterceptors } from "@nestjs/common";
+import { FileInterceptor, FilesInterceptor } from "@nestjs/platform-express";
+import { diskStorage } from "multer";
+import { Movie } from "src/movie/movie.model";
 
-@Controller('movie')
+    import { editFileName, imageFileFilter, MovieService } from './movie.service';
+
+@Controller('movies')
 export class MovieController {
     constructor(private readonly movieService: MovieService) {}
   
     @Post()
-    async addMovie(
-      @Body('name') movieName: string,
-      @Body('description') movieDesc: string,
-      @Body('Image') movieImage: String,
-    ) {
-      const generatedId = await this.movieService.insertMovie(
-        movieName,
-        movieDesc,
-        movieImage,
-      );
-      return { id: generatedId };
+    async createMovie(@Res() response, @Body() movie: Movie) {
+        const newMovie = await this.movieService.create(movie);
+        return response.status(HttpStatus.CREATED).json({
+            newMovie
+        })
     }
-  
+
     @Get()
-    async getAllMovie() {
-      const movies = await this.movieService.getMovies();
-      return movies;
+    async fetchAll(@Res() response) {
+        const movies = await this.movieService.readAll();
+        return response.status(HttpStatus.OK).json({
+            movies
+        })
     }
-  
-    @Get(':id')
-    getMovie(@Param('id') movieId: string) {
-      return this.movieService.getSingleMovie(movieId);
+
+    @Get('/:id')
+    async findById(@Res() response, @Param('id') id) {
+        const movie = await this.movieService.readById(id);
+        return response.status(HttpStatus.OK).json({
+            movie
+        })
     }
-  
-    @Patch(':id')
-    async updateMovie(
-      @Param('id') movieId: string,
-      @Body('name') movieName: string,
-      @Body('description') movieDesc: string,
-      @Body('Image') movieImage: String,
-    ) {
-      await this.movieService.updateMovie(movieId, movieName, movieDesc, movieImage);
-      return null;
+
+    @Put('/:id')
+    async update(@Res() response, @Param('id') id, @Body() movie: Movie) {
+        const updatedMovie = await this.movieService.update(id, movie);
+        return response.status(HttpStatus.OK).json({
+            updatedMovie
+        })
     }
-  
-    @Delete(':id')
-    async removeMovie(@Param('id') movieId: string) {
-        await this.movieService.deleteMovie(movieId);
-        return null;
+
+    @Delete('/:id')
+    async delete(@Res() response, @Param('id') id) {
+        const deletedMovie = await this.movieService.delete(id);
+        return response.status(HttpStatus.OK).json({
+            deletedMovie
+        })
     }
+
+    @Post("uploaded")
+  @UseInterceptors(
+    FileInterceptor('image', {
+      storage: diskStorage({
+        destination: './src/uploads/files',
+        filename: editFileName,
+      }),
+      fileFilter: imageFileFilter,
+    }),
+  )
+  async uploadedFile(@UploadedFile() file) {
+    const upload = await this.movieService.create(file)
+    const response = {
+      originalname: file.originalname,
+      filename: file.filename,
+    };
+    return response;
   }
 
-
+  @Post('multiple')
+  @UseInterceptors(
+    FilesInterceptor('image', 20, {
+      storage: diskStorage({
+        destination: './src/uploads/files',
+        filename: editFileName,
+      }),
+      fileFilter: imageFileFilter,
+    }),
+  )
+  async uploadMultipleFiles(@UploadedFiles() files) {
+    console.log(files)
+    const response = [];
+    files.forEach(file => {
+      const fileReponse = {
+        originalname: file.originalname,
+        filename: file.filename,
+        file
+      };
+      response.push(fileReponse);
+    });
+    return response;
+  }
+@Get('uploaded/:imgpath')
+seeUploadedFile(@Param('imgpath') image, @Res() res) {
+  return res.sendFile(image, { root: './src/uploads/files' });
+}
     
+}

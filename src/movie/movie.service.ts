@@ -1,68 +1,50 @@
 import { Injectable,NotFoundException } from '@nestjs/common';
-import { Movie } from './movie.model';
+import { Movie, MovieDocument } from './movie.model';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { extname } from 'path';
+import { Image } from 'src/uploads/files.model';
 
 @Injectable()
 export class MovieService {
-    constructor(@InjectModel('Movie') private readonly movieModel: Model<Movie>) {}
-
-    async insertMovie(name: string,desc: string, image: string){
-        const newMovie = new this.movieModel({
-            name,
-            description: desc,
-            image
-        });
-        const result = await newMovie.save();
-        console.log(result);
-        return result.id;
-    }
+    constructor(@InjectModel(Movie.name) private movieModel: Model<MovieDocument>) {}
     
-    async getMovies() {
-        const movies = await this.movieModel.find().exec();
-    return movies.map(movie => ({
-      id: movie.id,
-      name: movie.name,
-      description: movie.description,
-      image: movie.image,
-    }));
-  }
-  async updateMovie(
-   movieId: string,
-    name: string,
-    desc: string,
-    image: string,
-  ) {
-    const updatedMovie = await this.findMovie(movieId);
-    if (name) {
-      updatedMovie.name = name;
+    async create(movie: Movie): Promise<Movie> {
+        const newMovie = new this.movieModel(movie);
+        return newMovie.save();
     }
-    if (desc) {
-      updatedMovie.description = desc;
-    }
-    if (image) {
-      updatedMovie.image = image;
-    }
-    updatedMovie.save();
-  }
 
-  async deleteMovie(prodId: string) {
-    const result = await this.movieModel.deleteOne({_id: prodId}).exec();
-    if (result.n === 0) {
-      throw new NotFoundException('Could not find movie.');
+    async readAll(): Promise<Movie[]> {
+        return await this.movieModel.find().exec();
     }
-  }
 
-  private async findMovie(id: string): Promise<Movie> {
-    let movie;
-    try {
-      movie = await this.movieModel.findById(id).exec();
-    } catch (error) {
-      throw new NotFoundException('Could not find movie.');
+    async readById(id): Promise<Movie> {
+        return await this.movieModel.findById(id).exec();
     }
-    if (!movie) {
-      throw new NotFoundException('Could not find movie.');
+
+    async update(id, movie: Movie): Promise<Movie> {
+        return await this.movieModel.findByIdAndUpdate(id, movie, {new: true})
     }
-    return movie;
-  }
+
+    async delete(id): Promise<any> {
+        return await this.movieModel.findByIdAndRemove(id);
+    }
+       
 }
+
+export const editFileName = (req, file, callback) => {
+  const name = file.originalname.split('.')[0];
+  const fileExtName = extname(file.originalname);
+  const randomName = Array(4)
+    .fill(null)
+    .map(() => Math.round(Math.random() * 16).toString(16))
+    .join('');
+  callback(null, `${name}-${randomName}${fileExtName}`);
+};
+ 
+export const imageFileFilter = (req, file, callback) => {
+  if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
+    return callback(new Error('Only image files are allowed!'), false);
+  }
+  callback(null, true);
+};
