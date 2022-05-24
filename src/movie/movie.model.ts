@@ -13,20 +13,8 @@ export class Movie {
     @Prop()
     description: string;
 
-    @Prop()
-    files: [
-        {
-            sfieldname: String,
-            originalname: String,
-            encoding: String,
-            mimetype: String,
-            destination: String,
-            filename: String,
-            path: String,
-            size:  Number
-
-        }
-    ]
+    
+    
 
 
 }
