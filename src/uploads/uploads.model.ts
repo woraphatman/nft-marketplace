@@ -5,6 +5,8 @@ export type ImageDocument = Image & Document;
 
 @Schema()
 export class Image {
+    @Prop()
+    name: String
 @Prop()
 sfieldname: String
 @Prop()

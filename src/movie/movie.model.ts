@@ -13,9 +13,7 @@ export class Movie {
     @Prop()
     description: string;
 
-    
-    
-
+  
 
 }
 

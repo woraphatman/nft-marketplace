@@ -1,9 +1,6 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Res, UploadedFile, UploadedFiles, UseInterceptors } from "@nestjs/common";
-import { FileInterceptor, FilesInterceptor } from "@nestjs/platform-express";
-import { diskStorage } from "multer";
+import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Res,  } from "@nestjs/common";
 import { Movie } from "src/movie/movie.model";
-
-    import { editFileName, imageFileFilter, MovieService } from './movie.service';
+    import {  MovieService } from './movie.service';
 
 @Controller('movies')
 export class MovieController {
@@ -49,51 +46,4 @@ export class MovieController {
         })
     }
 
-    @Post("uploaded")
-  @UseInterceptors(
-    FileInterceptor('image', {
-      storage: diskStorage({
-        destination: './src/uploads/files',
-        filename: editFileName,
-      }),
-      fileFilter: imageFileFilter,
-    }),
-  )
-  async uploadedFile(@UploadedFile() file) {
-    const upload = await this.movieService.create(file)
-    const response = {
-      originalname: file.originalname,
-      filename: file.filename,
-    };
-    return response;
-  }
-
-  @Post('multiple')
-  @UseInterceptors(
-    FilesInterceptor('image', 20, {
-      storage: diskStorage({
-        destination: './src/uploads/files',
-        filename: editFileName,
-      }),
-      fileFilter: imageFileFilter,
-    }),
-  )
-  async uploadMultipleFiles(@UploadedFiles() files) {
-    console.log(files)
-    const response = [];
-    files.forEach(file => {
-      const fileReponse = {
-        originalname: file.originalname,
-        filename: file.filename,
-        file
-      };
-      response.push(fileReponse);
-    });
-    return response;
-  }
-@Get('uploaded/:imgpath')
-seeUploadedFile(@Param('imgpath') image, @Res() res) {
-  return res.sendFile(image, { root: './src/uploads/files' });
-}
-    
 }
