@@ -5,12 +5,10 @@ import { UserService } from './user.service';
 
 @Controller('user')
 export class UserController {
-    constructor(private userService: UserService) {}
+  constructor(private userService: UserService) {}
 
-    @Post('signup')
-    signUp(
-        @Body() signUpDto: SignUpDto
-    ): Promise<User> {
-        return this.userService.signUp(signUpDto)
-    }
+  @Post('signup')
+  signUp(@Body() signUpDto: SignUpDto): Promise<User> {
+    return this.userService.signUp(signUpDto);
+  }
 }

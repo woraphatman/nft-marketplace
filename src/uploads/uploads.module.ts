@@ -6,10 +6,13 @@ import { ImageSchema } from './uploads.model';
 import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
-   imports: [MulterModule.register({
-    dest: './src/uploads/files',
-  }),],
+  imports: [
+    MongooseModule.forFeature([{ name: "Image", schema: ImageSchema }]),
+    MulterModule.register({
+      dest: './src/uploads/files',
+    }),
+  ],
   providers: [UploadsService],
-  controllers: [UploadsController]
+  controllers: [UploadsController],
 })
 export class UploadsModule {}

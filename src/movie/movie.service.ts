@@ -13,19 +13,19 @@ export class MovieService {
     }
 
     async readAll(): Promise<Movie[]> {
-        return await this.movieModel.find().exec();
+        return this.movieModel.find().exec();
     }
 
     async readById(id): Promise<Movie> {
-        return await this.movieModel.findById(id).exec();
+        return  this.movieModel.findById(id).exec();
     }
 
     async update(id, movie: Movie): Promise<Movie> {
-        return await this.movieModel.findByIdAndUpdate(id, movie, {new: true})
+        return  this.movieModel.findByIdAndUpdate(id, movie, {new: true})
     }
 
     async delete(id): Promise<any> {
-        return await this.movieModel.findByIdAndRemove(id);
+        return  this.movieModel.findByIdAndRemove(id);
     }
        
 }

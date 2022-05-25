@@ -11,7 +11,7 @@ import { JwtStrategy } from './jwt/jwt.strategy';
 @Module({
   imports: [
     ConfigModule,
-    UserModule, 
+    UserModule,
     PassportModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
@@ -20,9 +20,9 @@ import { JwtStrategy } from './jwt/jwt.strategy';
         return {
           secret: configService.get('JWT_SECRET'),
           signOptions: { expiresIn: '2 days' },
-        }
-      }
-    })
+        };
+      },
+    }),
   ],
   providers: [AuthService, LocalStrategy, JwtStrategy],
   controllers: [AuthController],
