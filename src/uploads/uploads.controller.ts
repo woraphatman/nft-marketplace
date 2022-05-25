@@ -14,8 +14,8 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import { Image } from './uploads.model';
-import {
+import { Image} from './uploads.model';
+import { 
   editFileName,
   imageFileFilter,
   UploadsService,
@@ -34,9 +34,9 @@ export class UploadsController {
       fileFilter: imageFileFilter,
     }),
   )
-  async uploadedFile(@UploadedFile() file, @Body() image: Image) {
-    // const newimage = await this.uploadsService.create(image);
-    // return newimage
+  async uploadedFile(@UploadedFile() file, ) {
+    const newimage = await this.uploadsService.create(file);
+    return newimage
   }
 
   @Post('multiple')
@@ -49,9 +49,10 @@ export class UploadsController {
       fileFilter: imageFileFilter,
     }),
   )
-  async uploadMultipleFiles(@UploadedFiles() files) {
+  async uploadMultipleFiles(@UploadedFiles() files,) {
     console.log(files);
-
+    const newimages = await this.uploadsService.create(files);
+   
     const response = [];
     files.forEach((file) => {
       const fileReponse = {
@@ -59,7 +60,8 @@ export class UploadsController {
       };
       response.push(fileReponse);
     });
-    return response;
+    return response
+    newimages
   }
   @Get(':imgpath')
   seeUploadedFile(@Param('imgpath') image, @Res() res) {
