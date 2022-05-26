@@ -9,6 +9,7 @@ import { MovieService } from './movie/movie.service';
 import { UploadsController } from './uploads/uploads.controller';
 import { UploadsModule } from './uploads/uploads.module';
 import { UploadsService } from './uploads/uploads.service';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { UploadsService } from './uploads/uploads.service';
     MongooseModule.forRoot(process.env.MONGODB_URI),
     MovieModule,
     UploadsModule,
+    UserModule
   ],
   
 })

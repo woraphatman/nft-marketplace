@@ -1,16 +1,14 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { SignUpDto } from './dto/signup.dto';
-import { UserRepository } from './user.repository';
 import * as bcrypt from 'bcrypt';
-import { User } from './user.entity';
+import { User, UserDocument } from './user.mode';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class UserService {
-  constructor(
-    @InjectRepository(UserRepository)
-    private userRepository: UserRepository,
-  ) {}
+  constructor(@InjectModel('User') private userModel: Model<UserDocument>) {}
 
   async signUp(signupUpDto: SignUpDto): Promise<User> {
     try {
@@ -18,12 +16,13 @@ export class UserService {
 
       const hashedPassword = await bcrypt.hashSync(password, 10);
 
-      const user = this.userRepository.create({
+      const user = this.userModel.create({
         username,
         password: hashedPassword,
       });
-
-      return await this.userRepository.save(user);
+      const creatednew = new this.userModel(user);
+    return creatednew.save();
+      
     } catch (e) {
       throw new ConflictException({
         message: ['Username has been already using.'],
@@ -32,7 +31,7 @@ export class UserService {
   }
 
   async findOneUser(username: string): Promise<User | undefined> {
-    const user = await this.userRepository.findOne({ username });
+    const user = await this.userModel.findOne({ username });
     return user;
   }
 }
