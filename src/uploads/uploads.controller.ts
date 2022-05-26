@@ -3,10 +3,8 @@ import {
   Controller,
   Delete,
   Get,
-  HttpStatus,
   Param,
   Post,
-  Put,
   Res,
   UploadedFile,
   UploadedFiles,
@@ -14,7 +12,6 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import { Image} from './uploads.model';
 import { 
   editFileName,
   imageFileFilter,
