@@ -8,26 +8,11 @@ import { Model } from 'mongoose';
 
 @Injectable()
 export class UserService {
-  constructor(@InjectModel('User') private userModel: Model<UserDocument>) {}
-
-  async signUp(signupUpDto: SignUpDto): Promise<User> {
-    try {
-      const { username, password } = signupUpDto;
-
-      const hashedPassword = await bcrypt.hashSync(password, 10);
-
-      const user = this.userModel.create({
-        username,
-        password: hashedPassword,
-      });
-      const creatednew = new this.userModel(user);
+  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
+  async signUp(signUpDto: SignUpDto): Promise<User> {
+      const hashedPassword = bcrypt.hashSync(signUpDto.password, 10);
+      const creatednew = new this.userModel({username: signUpDto.username , password: hashedPassword});
     return creatednew.save();
-      
-    } catch (e) {
-      throw new ConflictException({
-        message: ['Username has been already using.'],
-      });
-    }
   }
 
   async findOneUser(username: string): Promise<User | undefined> {
