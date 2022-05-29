@@ -8,7 +8,7 @@ export class UserController {
   constructor(private userService: UserService) {}
 
   @Post('signup')
-  signUp(@Body() signUpDto: SignUpDto): Promise<User> {
+  signUp(@Body() signUpDto: SignUpDto): Promise<User | string> {
     return this.userService.signUp(signUpDto);
   }
 }
