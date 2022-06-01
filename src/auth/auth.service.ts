@@ -24,7 +24,7 @@ export class AuthService {
     console.log(payload);
     return {
       access_token: this.jwtService.sign(payload, {
-        secret: process.env.SECRET,
+        secret: process.env.SECRET || secret,
       }),
     };
   }
