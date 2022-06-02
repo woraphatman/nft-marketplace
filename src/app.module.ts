@@ -12,7 +12,7 @@ import { UserModule } from './user/user.module';
     ConfigModule.forRoot({
       envFilePath: ['.env'],
     }),
-    MongooseModule.forRoot(process.env.MONGODB_URI),
+    MongooseModule.forRoot(process.env.MONGODB_URI || "mongodb+srv://man:1234@cluster0.dmuor.mongodb.net/Movies"),
     MovieModule,
     UploadsModule,
     UserModule,
